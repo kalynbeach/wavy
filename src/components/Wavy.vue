@@ -17,24 +17,13 @@ export default {
     Canvas,
     Controls
   },
-  mounted: function() {
-    console.log('STATE: ', this.$store.state)
-    // this.getUserMedia({ audio: true })
-    // this.listMediaDevices()
+  created: function() {
     this.$store.dispatch('audio/fetchAvailableDevices')
+    // this.getMediaStream()
   },
   methods: {
-    setUserMediaDevice() {
-
-    },
-    async getUserMedia(contraints) {
-      let stream = null
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(contraints)
-        console.log('STREAM: ', stream)
-      } catch(err) {
-        console.log('getUserMedia ERROR: ', err)
-      }
+    getMediaStream () {
+      this.$store.dispatch('audio/fetchMediaStream')
     }
   }
 }
