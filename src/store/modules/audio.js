@@ -15,7 +15,13 @@ const actions = {
   fetchAvailableDevices ({ commit }) {
     navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
-        commit('SET_AVAILABLE_DEVICES', devices)
+        let identifiedDevices = devices.map(device => {
+          Object.defineProperty(device, 'uniqueId', {
+            value: Math.round(Math.random() * 1024)
+          })
+          return device
+        })
+        commit('SET_AVAILABLE_DEVICES', identifiedDevices)
       })
       .catch(function(err) {
         console.log(err.name + ': ' + err.message)

@@ -1,9 +1,13 @@
 <template>
   <div class="controls">
     <h1>Wavy</h1>
+    <div class="buttons">
+      <button class="button">Play</button>
+      <button class="button">Stop</button>
+    </div>
     <div class="audio-device-select">
       <select v-model="selected" name="device-select" id="device-select">
-        <option v-for="device in devices" v-bind:value="device" v-bind:key="device.label">
+        <option v-for="device in devices" v-bind:value="device" v-bind:key="device.uniqueId">
           {{ device.label }}
         </option>
       </select>
@@ -46,6 +50,18 @@ export default {
   justify-content: space-between;
   background-color: rgb(243, 243, 243);
   border: 1px solid black;
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .button {
+
+      background-color: white;
+      border: 1px solid black;
+    }
+  }
 
   .audio-device-select {
     align-self: center;
