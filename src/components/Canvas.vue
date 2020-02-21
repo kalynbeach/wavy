@@ -1,6 +1,7 @@
 <template>
   <div class="canvas">
     <h2>Canvas</h2>
+    <canvas id="canvas"></canvas>
   </div>
 </template>
 

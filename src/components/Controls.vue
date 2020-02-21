@@ -2,10 +2,8 @@
   <div class="controls">
     <h1>Wavy</h1>
     <div class="buttons">
-      <button v-on:click="$emit('fetch-stream')" class="button">Fetch Stream</button>
-      <button v-on:click="$emit('create-analyser')" class="button">Create Analyser</button>
-      <button class="button">Play</button>
-      <button class="button">Stop</button>
+      <button v-on:click="$emit('fetch-stream')" class="button">Fetch MediaStream</button>
+      <button v-on:click="$emit('visualize-waveform')" class="button">Visualize Waveform</button>
     </div>
     <div class="audio-device-select">
       <select v-model="selected" name="device-select" id="device-select">

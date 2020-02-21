@@ -26,6 +26,7 @@ const actions = {
     try {
       stream = await navigator.mediaDevices.getUserMedia(contraints)
       commit('SET_MEDIA_STREAM', stream)
+      console.log('MediaStream fetched.')
     } catch(err) {
       console.log('fetchUserMedia ERROR: ', err)
     }
