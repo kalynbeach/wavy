@@ -2,6 +2,8 @@
   <div class="controls">
     <h1>Wavy</h1>
     <div class="buttons">
+      <button v-on:click="$emit('fetch-stream')" class="button">Fetch Stream</button>
+      <button v-on:click="$emit('create-analyser')" class="button">Create Analyser</button>
       <button class="button">Play</button>
       <button class="button">Stop</button>
     </div>
@@ -52,14 +54,18 @@ export default {
   border: 1px solid black;
 
   .buttons {
+    margin: 0 1rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 
     .button {
-
       background-color: white;
       border: 1px solid black;
+
+      &:not(:last-of-type) {
+        margin-right: 1rem;
+      }
     }
   }
 
