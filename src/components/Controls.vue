@@ -45,11 +45,16 @@ export default {
 
 <style lang="scss" scoped>
 .controls {
+  height: 5vh;
+  padding: 0 0.5rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   background-color: rgb(243, 243, 243);
-  border: 1px solid black;
+
+  h1 {
+    align-self: center;
+  }
 
   .buttons {
     margin: 0 1rem;

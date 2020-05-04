@@ -44,7 +44,7 @@ export default {
 
   methods: {
 
-    fetchMediaStream () {
+    fetchMediaStream() {
       console.log('Fetching MediaStream...')
       this.$store.dispatch('audio/fetchMediaStream')
     },
@@ -69,9 +69,9 @@ export default {
       let canvas = this.canvas
       let canvasContext = this.canvasContext
 
-      console.dir(analyser)
-      console.dir(canvas)
-      console.dir(canvasContext)
+      // console.dir(analyser)
+      // console.dir(canvas)
+      // console.dir(canvasContext)
 
       const WIDTH = canvas.width
       const HEIGHT = canvas.height
@@ -156,6 +156,9 @@ export default {
 <style lang="scss">
 .wavy {
   width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 
   h1, h2, h3 {
     margin: 0;

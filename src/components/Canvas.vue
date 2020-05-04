@@ -14,7 +14,7 @@ export default {
 <style scoped>
 .canvas {
   width: 100%;
-  min-height: 100vh;
+  min-height: 95vh;
   background-color: rgb(255, 255, 255);
 }
 </style>
