@@ -1,12 +1,9 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
 import audio from './modules/audio'
 
-Vue.use(Vuex)
-
 const debug = process.env.NODE_ENV !== 'production'
 
-export default new Vuex.Store({
+export default Vuex.createStore({
   modules: {
     audio
   },
@@ -19,4 +16,4 @@ export default new Vuex.Store({
     }
   },
   strict: debug
-})
+});
