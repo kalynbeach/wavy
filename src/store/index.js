@@ -1,19 +1,25 @@
-import Vuex from 'vuex'
+// import Vuex from 'vuex'
+import { reactive } from 'vue'
 import audio from './modules/audio'
 
-const debug = process.env.NODE_ENV !== 'production'
+// const debug = process.env.NODE_ENV !== 'production'
 
-export default Vuex.createStore({
-  modules: {
-    audio
-  },
-  state: {
-    loading: false
-  },
-  mutations: {
-    SET_LOADING_STATUS(state, status) {
-      state.loading = status
-    }
-  },
-  strict: debug
-});
+// export default Vuex.createStore({
+//   modules: {
+//     audio
+//   },
+//   state: {
+//     loading: false
+//   },
+//   mutations: {
+//     SET_LOADING_STATUS(state, status) {
+//       state.loading = status
+//     }
+//   },
+//   strict: debug
+// });
+
+export default reactive({
+  loading: false,
+  audio
+})
