@@ -3,6 +3,7 @@
     <Canvas />
     <Controls
       :devices="audioState.devices.available.value"
+      :selectedDevice="audioState.devices.selected ? audioState.devices.selected : undefined"
       @fetch-stream="fetchMediaStream"
       @select-device="selectDevice"
       @visualize-waveform="runTest"
@@ -32,8 +33,8 @@ export default {
       loading: false
     })
 
-    const { 
-      audioState,
+    const {
+      audioState, 
       createAudioAnalyser,
       createAudioContext,
       fetchMediaStream,
@@ -89,7 +90,10 @@ export default {
     })
 
     onUpdated(() => {
-      console.log('Updated!')
+      console.log('Updated =====')
+      console.log('audioState: ', audioState)
+      console.log('canvasState: ', canvasState)
+      console.log('=============')
     })
 
     watch(
@@ -114,7 +118,7 @@ export default {
   }
 }
 
-
+// TODO: Refactor this into its own file
 function useAudio () {
 
   const audioState = reactive({
@@ -186,7 +190,7 @@ function useAudio () {
   }
 }
 
-
+// TODO: Refactor this into its own file
 function useCanvas () {
 
   const canvasState = reactive({

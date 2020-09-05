@@ -5,6 +5,9 @@
       <button v-on:click="$emit('fetch-stream')" class="button">Fetch MediaStream</button>
       <button v-on:click="$emit('visualize-waveform')" class="button">Visualize Waveform</button>
     </div>
+    <div class="info">
+      <p>Selected Device: {{ selectedDevice ? selectedDevice.label : "No device selected" }}</p>
+    </div>
     <div class="audio-device-select">
       <select
         name="device-select"
@@ -23,7 +26,7 @@
 
 <script>
 /* eslint-disable no-console */
-import { computed, reactive, watch, onUpdated } from 'vue'
+import { reactive, watch, onUpdated } from 'vue'
 
 
 export default {
@@ -32,16 +35,16 @@ export default {
 
   props: {
     devices: Array,
-    fetchMediaStream: Function,
-    selectDevice: Function,
-    runTest: Function
+    selectedDevice: Object
+    // fetchMediaStream: Function,
+    // selectDevice: Function,
+    // runTest: Function
   },
 
-  setup (props) {
+  setup (props, { emit }) {
 
     const controlsState = reactive({
-      devices: computed(() => props.devices),
-      selected: null
+      selected: props.selectedDevice
     })
   
     // onMounted(() => {
@@ -50,8 +53,8 @@ export default {
     // })
 
     onUpdated(() => {
-      console.log('WATCH -- props: ', props)
-      console.log('controlsState: ', controlsState)
+      console.log('UPDATED -- props: ', props)
+      console.log('UPDATED -- controlsState: ', controlsState)
     })
 
     watch(
@@ -60,7 +63,9 @@ export default {
         console.log('WATCH -- props: ', props)
         console.log('WATCH -- selectedDevice: ', selectedDevice)
         // controlsState.selected = selectedDevice
-        props.selectDevice(selectedDevice)
+        // TODO: Need to emit the device selection as an event for Wavy to pick up
+        // props.selectDevice(selectedDevice)
+        emit('select-device', selectedDevice)
       }
     )
 
@@ -88,7 +93,7 @@ export const _controls = {
   methods: {
     selectDevice (device) {
       console.log('New device selected: ', device)
-      this.$store.dispatch('audio/selectDevice', device)
+      this.$emit('select-device', device)
     }
   },
   watch: {
@@ -120,7 +125,7 @@ export const _controls = {
 
     .button {
       background-color: white;
-      border: 1px solid black;
+      border: 2px solid #2c3e50;;
 
       &:not(:last-of-type) {
         margin-right: 1rem;
