@@ -46,11 +46,6 @@ export default {
     const controlsState = reactive({
       selected: props.selectedDevice
     })
-  
-    // onMounted(() => {
-    //   console.log('props.devices: ', props.devices)
-    //   console.log('controlsState: ', controlsState)
-    // })
 
     onUpdated(() => {
       console.log('UPDATED -- props: ', props)
@@ -72,33 +67,6 @@ export default {
     return {
       // ...toRefs(controlsState)
       controlsState
-    }
-  }
-}
-
-////////////////////////////
-
-export const _controls = {
-  name: 'Controls',
-  data: function () {
-    return {
-      selected: null
-    }
-  },
-  computed: {
-    devices () {
-      return this.$store.state.audio.devices.available
-    }
-  },
-  methods: {
-    selectDevice (device) {
-      console.log('New device selected: ', device)
-      this.$emit('select-device', device)
-    }
-  },
-  watch: {
-    selected: function(val) {
-      this.selectDevice(val)
     }
   }
 }
