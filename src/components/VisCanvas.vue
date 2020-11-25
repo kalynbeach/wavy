@@ -1,22 +1,22 @@
 <template>
-  <div class="canvas">
-    <canvas id="canvas"></canvas>
+  <div class="vis-canvas">
+    <canvas id="vis-canvas"></canvas>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Canvas'
+  name: 'VisCanvas'
 }
 </script>
 
 <style scoped lang="scss">
-.canvas {
+.vis-canvas {
   width: 100%;
   min-height: 95vh;
   background-color: rgb(255, 255, 255);
 
-  #canvas {
+  #vis-canvas {
     width: 100%;
     height: 100%;
     border: 2px solid #2c3e50;;

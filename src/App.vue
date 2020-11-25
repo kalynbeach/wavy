@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Wavy msg="Woooo"/>
+    <wavy />
   </div>
 </template>
 

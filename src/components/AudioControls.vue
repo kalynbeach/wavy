@@ -1,9 +1,10 @@
 <template>
-  <div class="controls">
+  <div class="audio-controls">
     <h1>Wavy</h1>
     <div class="buttons">
-      <button v-on:click="$emit('fetch-stream')" class="button">Fetch MediaStream</button>
-      <button v-on:click="$emit('visualize-waveform')" class="button">Visualize Waveform</button>
+      <button @click="$emit('test-event')" class="button">TEST</button>
+      <button @click="$emit('fetch-stream')" class="button">Fetch MediaStream</button>
+      <button @click="$emit('visualize-waveform')" class="button">Visualize Waveform</button>
     </div>
     <div class="info">
       <p>Selected Device: {{ selectedDevice ? selectedDevice.label : "No device selected" }}</p>
@@ -12,7 +13,7 @@
       <select
         name="device-select"
         id="device-select"
-        v-model="controlsState.selected">
+        v-model="selected">
         <option 
           v-for="device in devices"
           v-bind:value="device"
@@ -26,54 +27,54 @@
 
 <script>
 /* eslint-disable no-console */
-import { reactive, watch, onUpdated } from 'vue'
+import { reactive, watch, toRefs } from 'vue'
 
 
 export default {
 
-  name: 'Controls',
+  name: 'AudioControls',
 
   props: {
     devices: Array,
     selectedDevice: Object
-    // fetchMediaStream: Function,
-    // selectDevice: Function,
-    // runTest: Function
   },
+
+  emits: [
+    'test-event',
+    'fetch-stream',
+    'select-device',
+    'visualize-waveform'
+  ],
 
   setup (props, { emit }) {
 
-    const controlsState = reactive({
+    const audioControlsState = reactive({
       selected: props.selectedDevice
     })
 
-    onUpdated(() => {
-      console.log('UPDATED -- props: ', props)
-      console.log('UPDATED -- controlsState: ', controlsState)
-    })
-
     watch(
-      () => controlsState.selected,
+      () => audioControlsState.selected,
       (selectedDevice) => {
-        console.log('WATCH -- props: ', props)
         console.log('WATCH -- selectedDevice: ', selectedDevice)
-        // controlsState.selected = selectedDevice
-        // TODO: Need to emit the device selection as an event for Wavy to pick up
-        // props.selectDevice(selectedDevice)
         emit('select-device', selectedDevice)
       }
     )
 
+    // function handleFetchClick () {
+    //   console.log('FETCH HANDLER CALLED')
+    //   emit("fetch-stream")
+    // }
+
     return {
-      // ...toRefs(controlsState)
-      controlsState
+      ...toRefs(audioControlsState),
+      // handleFetchClick
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.controls {
+.audio-controls {
   height: 5vh;
   padding: 0 0.5rem;
   display: flex;

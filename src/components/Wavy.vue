@@ -1,21 +1,24 @@
 <template>
   <div class="wavy">
-    <Canvas />
-    <Controls
-      :devices="audioState.devices.available.value"
-      :selectedDevice="audioState.devices.selected ? audioState.devices.selected : undefined"
+    <vis-canvas />
+    <audio-controls
+      :devices="audioDevices.available"
+      :selectedDevice="audioDevices.selected"
+      @test-event="handleTestEvent"
       @fetch-stream="fetchMediaStream"
       @select-device="selectDevice"
-      @visualize-waveform="runTest"
-    />
+      @visualize-waveform="runTest">
+    </audio-controls>
   </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
-import { reactive, onMounted, onUpdated, watch } from 'vue'
-import Canvas from './Canvas.vue'
-import Controls from './Controls.vue'
+import { reactive, onMounted } from 'vue'
+import AudioControls from './AudioControls.vue'
+import VisCanvas from './VisCanvas.vue'
+import useAudio from '@/composables/audio'
+import useCanvas from '@/composables/canvas'
 
 
 export default {
@@ -23,8 +26,8 @@ export default {
   name: 'Wavy',
 
   components: {
-    Canvas,
-    Controls
+    AudioControls,
+    VisCanvas
   },
 
   setup () {
@@ -34,7 +37,10 @@ export default {
     })
 
     const {
-      audioState, 
+      audioContext,
+      audioStream,
+      audioAnalyser,
+      audioDevices,
       createAudioAnalyser,
       createAudioContext,
       fetchMediaStream,
@@ -43,43 +49,34 @@ export default {
     } = useAudio()
 
     const {
-      canvasState,
+      canvasContext,
+      element,
       createCanvasContext,
       visualizeWaveform
     } = useCanvas()
 
+    function handleTestEvent () {
+      console.log("Handling 'test-event")
+    }
+
     function runTest () {
       console.log('Running test...')
-      
-      if (audioState && audioState.context) {
-        audioState.context.resume()
+      if (audioContext) {
+        audioContext.resume()
       }
-      
-      if (audioState.context && audioState.stream) {
+      if (audioContext && audioStream) {
         createAudioAnalyser()
       } else {
-        if (audioState.context == null) {
-          console.error('AudioContext has not yet been created')
-        }
-        if (audioState.stream == null) {
-          console.error('MediaStream has not yet been fetched')
-        }
+        if (audioContext == null) { console.error('AudioContext has not yet been created') }
+        if (audioStream == null) { console.error('MediaStream has not yet been fetched') }
       }
-
       createCanvasContext()
-
-      if (audioState.analyser && canvasState.element && canvasState.context) {
-        visualizeWaveform(audioState.analyser)
+      if (audioAnalyser && element && canvasContext) {
+        visualizeWaveform(audioAnalyser)
       } else {
-        if (audioState.analyser == null) {
-          console.error('AnalyserNode has not yet been created')
-        }
-        if (canvasState.element == null) {
-          console.error('Canvas has not yet been created')
-        }
-        if (canvasState.context == null) {
-          console.error('Canvas context has not yet been created')
-        }
+        if (audioAnalyser == null) { console.error('AnalyserNode has not yet been created') }
+        if (element == null) { console.error('Canvas has not yet been created') }
+        if (canvasContext == null) { console.error('Canvas context has not yet been created') }
       }
     }
 
@@ -87,179 +84,28 @@ export default {
       console.log('Mounted!')
       fetchAvailableDevices()
       createAudioContext()
+      // fetchMediaStream()
     })
 
-    onUpdated(() => {
-      console.log('Updated =====')
-      console.log('audioState: ', audioState)
-      console.log('canvasState: ', canvasState)
-      console.log('=============')
-    })
-
-    watch(
-      () => audioState,
-      (currentAudioState) => {
-        console.log('WATCH - current audioState: ', currentAudioState)
-      }
-    )
+    // watch(() => audioState, (currentAudioState) => {
+    //   console.log('WATCH - current audioState: ', currentAudioState)
+    // })
 
     return {
       state,
-      audioState,
+      audioContext,
+      audioStream,
+      audioAnalyser,
+      audioDevices,
       createAudioContext,
       fetchMediaStream,
       fetchAvailableDevices,
       selectDevice,
-      canvasState,
       createCanvasContext,
       visualizeWaveform,
+      handleTestEvent,
       runTest
     }
-  }
-}
-
-// TODO: Refactor this into its own file
-function useAudio () {
-
-  const audioState = reactive({
-    context: null,
-    stream: null,
-    analyser: null,
-    devices: {
-      available: [],
-      selected: null
-    }
-  })
-
-  function createAudioAnalyser () {
-    console.log('Creating audio analyser...')
-    if (audioState.context && audioState.stream) {
-      audioState.analyser = audioState.context.createAnalyser()
-      console.log('Analyser created!')
-      const source = audioState.context.createMediaStreamSource(audioState.stream)
-      source.connect(audioState.analyser)
-      audioState.analyser.connect(audioState.context.destination)
-    }
-  }
-
-  function createAudioContext () {
-    audioState.context = new (window.AudioContext || window.webkitAudioContext)()
-  }
-
-  async function fetchMediaStream () {
-    let stream = null
-    const constraints = { audio: true }
-    try {
-      stream = await navigator.mediaDevices.getUserMedia(constraints)
-      audioState.stream = stream
-      console.log('MediaStream fetched.')
-    } catch(err) {
-      console.log('fetchUserMedia ERROR: ', err)
-    }
-  }
-
-  function fetchAvailableDevices () {
-    navigator.mediaDevices.enumerateDevices()
-      .then(function(devices) {
-        let identifiedDevices = devices.map(device => {
-          Object.defineProperty(device, 'uniqueId', {
-            value: Math.round(Math.random() * 1024)
-          })
-          return device
-        })
-        audioState.devices.available.value = identifiedDevices
-      })
-      .catch(function(err) {
-        console.log(err.name + ': ' + err.message)
-      })
-  }
-
-  function selectDevice (device) {
-    audioState.devices.selected = device
-    console.log('Audio device set: ', audioState.devices.selected)
-  }
-
-  return {
-    // ...toRefs(audioState),
-    audioState,
-    createAudioAnalyser,
-    createAudioContext,
-    fetchMediaStream,
-    fetchAvailableDevices,
-    selectDevice
-  }
-}
-
-// TODO: Refactor this into its own file
-function useCanvas () {
-
-  const canvasState = reactive({
-    context: null,
-    element: null
-  })
-
-  function createCanvasContext () {
-    canvasState.element = document.getElementById('canvas')
-    canvasState.context = canvasState.element.getContext('2d')
-    console.log('Canvas and canvas context created!')
-  }
-
-  function visualizeWaveform (analyser) {
-    // let analyser = this.analyser
-    let canvas = canvasState.element
-    let canvasContext = canvasState.context
-
-    // console.dir(analyser)
-    // console.dir(canvas)
-    // console.dir(canvasContext)
-
-    const WIDTH = canvas.width
-    const HEIGHT = canvas.height
-    
-    // Set up audio buffer
-    analyser.fftSize = 2048
-    const bufferLength = analyser.frequencyBinCount
-    let dataArray = new Uint8Array(bufferLength)
-    
-    canvasContext.clearRect(0, 0, WIDTH, HEIGHT)
-
-    function draw() {
-      // eslint-disable-next-line no-unused-vars
-      let drawVisual = requestAnimationFrame(draw)
-      analyser.getByteTimeDomainData(dataArray)
-
-      canvasContext.fillStyle = 'rgb(200, 200, 200)'
-      canvasContext.fillRect(0, 0, WIDTH, HEIGHT)
-      canvasContext.lineWidth = 2
-      canvasContext.strokeStyle = 'rgb(0, 0, 0)'
-      canvasContext.beginPath()
-
-      let sliceWidth = WIDTH * 1.0 / bufferLength
-      let x = 0
-
-      for (let i = 0; i < bufferLength; i++) {
-        let v = dataArray[i] / 128.0
-        let y = v * HEIGHT / 2
-        if (i === 0) {
-          canvasContext.moveTo(x, y)
-        } else {
-          canvasContext.lineTo(x, y)
-        }
-        x += sliceWidth
-      }
-
-      canvasContext.lineTo(canvas.width, (canvas.height / 2))
-      canvasContext.stroke()
-    }
-
-    draw()
-  }
-
-  return {
-    // ...toRefs(canvasState),
-    canvasState,
-    createCanvasContext,
-    visualizeWaveform
   }
 }
 </script>
