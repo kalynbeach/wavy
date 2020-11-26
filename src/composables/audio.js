@@ -1,5 +1,6 @@
 import { reactive, toRefs } from 'vue'
 
+
 export default function useAudio () {
 
   const audioState = reactive({
@@ -13,10 +14,10 @@ export default function useAudio () {
   })
 
   function createAudioAnalyser () {
-    console.log('Creating audio analyser...')
+    console.log('Creating audioAnalyser...')
     if (audioState.audioContext && audioState.audioStream) {
       audioState.audioAnalyser = audioState.audioContext.createAnalyser()
-      console.log('Analyser created!')
+      console.log('Created AudioAnalyser.')
       const source = audioState.audioContext.createMediaStreamSource(audioState.audioStream)
       source.connect(audioState.audioAnalyser)
       audioState.audioAnalyser.connect(audioState.audioContext.destination)
@@ -26,6 +27,7 @@ export default function useAudio () {
   function createAudioContext () {
     console.log('Creating AudioContext...')
     audioState.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    console.log('Created AudioContext.')
   }
 
   async function fetchMediaStream () {
@@ -37,12 +39,12 @@ export default function useAudio () {
       audioState.audioStream = stream
       console.log('MediaStream fetched.')
     } catch(err) {
-      console.log('fetchUserMedia ERROR: ', err)
+      console.log('MediaStream fetch ERROR: ', err)
     }
   }
 
   function fetchAvailableDevices () {
-    console.log('Fetching available AudioDevices')
+    console.log('Fetching available AudioDevices...')
     navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
         let identifiedDevices = devices.map(device => {
@@ -52,6 +54,7 @@ export default function useAudio () {
           return device
         })
         audioState.audioDevices.available = identifiedDevices
+        console.log('AudioDevices fetched.')
       })
       .catch(function(err) {
         console.log(err.name + ': ' + err.message)
@@ -59,9 +62,7 @@ export default function useAudio () {
   }
 
   function selectDevice (device) {
-    console.log('Selecting AudioDevice: ', device)
     audioState.audioDevices.selected = device
-    console.log('AudioDevice set: ', audioState.audioDevices.selected)
   }
 
   return {

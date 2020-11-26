@@ -1,13 +1,12 @@
 <template>
   <div class="wavy">
-    <vis-canvas />
+    <vis-canvas></vis-canvas>
     <audio-controls
       :devices="audioDevices.available"
       :selectedDevice="audioDevices.selected"
-      @test-event="handleTestEvent"
-      @fetch-stream="fetchMediaStream"
-      @select-device="selectDevice"
-      @visualize-waveform="runTest">
+      @fetch="fetchMediaStream"
+      @select="selectDevice"
+      @visualize="runVisualizer">
     </audio-controls>
   </div>
 </template>
@@ -23,7 +22,7 @@ import useCanvas from '@/composables/canvas'
 
 export default {
 
-  name: 'Wavy',
+  name: 'wavy',
 
   components: {
     AudioControls,
@@ -50,46 +49,37 @@ export default {
 
     const {
       canvasContext,
-      element,
+      canvasElement,
       createCanvasContext,
       visualizeWaveform
     } = useCanvas()
 
-    function handleTestEvent () {
-      console.log("Handling 'test-event")
-    }
-
-    function runTest () {
-      console.log('Running test...')
-      if (audioContext) {
-        audioContext.resume()
+    function runVisualizer () {
+      console.log('Running visualizer...')
+      console.log('audioContext: ', audioContext.value)
+      if (audioContext.value) {
+        audioContext.value.resume()
       }
-      if (audioContext && audioStream) {
+      if (audioContext.value && audioStream.value) {
         createAudioAnalyser()
       } else {
-        if (audioContext == null) { console.error('AudioContext has not yet been created') }
-        if (audioStream == null) { console.error('MediaStream has not yet been fetched') }
+        if (audioContext.value == null) { console.error('AudioContext has not yet been created') }
+        if (audioStream.value == null) { console.error('MediaStream has not yet been fetched') }
       }
       createCanvasContext()
-      if (audioAnalyser && element && canvasContext) {
-        visualizeWaveform(audioAnalyser)
+      if (audioAnalyser.value && canvasElement.value && canvasContext.value) {
+        visualizeWaveform(audioAnalyser.value)
       } else {
-        if (audioAnalyser == null) { console.error('AnalyserNode has not yet been created') }
-        if (element == null) { console.error('Canvas has not yet been created') }
-        if (canvasContext == null) { console.error('Canvas context has not yet been created') }
+        if (audioAnalyser.value == null) { console.error('AnalyserNode has not yet been created') }
+        if (canvasElement.value == null) { console.error('Canvas has not yet been created') }
+        if (canvasContext.value == null) { console.error('Canvas context has not yet been created') }
       }
     }
 
     onMounted(() => {
-      console.log('Mounted!')
       fetchAvailableDevices()
       createAudioContext()
-      // fetchMediaStream()
     })
-
-    // watch(() => audioState, (currentAudioState) => {
-    //   console.log('WATCH - current audioState: ', currentAudioState)
-    // })
 
     return {
       state,
@@ -103,8 +93,7 @@ export default {
       selectDevice,
       createCanvasContext,
       visualizeWaveform,
-      handleTestEvent,
-      runTest
+      runVisualizer
     }
   }
 }

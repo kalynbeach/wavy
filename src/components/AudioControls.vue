@@ -2,9 +2,8 @@
   <div class="audio-controls">
     <h1>Wavy</h1>
     <div class="buttons">
-      <button @click="$emit('test-event')" class="button">TEST</button>
-      <button @click="$emit('fetch-stream')" class="button">Fetch MediaStream</button>
-      <button @click="$emit('visualize-waveform')" class="button">Visualize Waveform</button>
+      <button @click="$emit('fetch')" class="button">Fetch MediaStream</button>
+      <button @click="$emit('visualize')" class="button">Visualize Waveform</button>
     </div>
     <div class="info">
       <p>Selected Device: {{ selectedDevice ? selectedDevice.label : "No device selected" }}</p>
@@ -32,7 +31,7 @@ import { reactive, watch, toRefs } from 'vue'
 
 export default {
 
-  name: 'AudioControls',
+  name: 'audio-controls',
 
   props: {
     devices: Array,
@@ -40,10 +39,10 @@ export default {
   },
 
   emits: [
-    'test-event',
-    'fetch-stream',
-    'select-device',
-    'visualize-waveform'
+    'test',
+    'fetch',
+    'select',
+    'visualize'
   ],
 
   setup (props, { emit }) {
@@ -55,19 +54,12 @@ export default {
     watch(
       () => audioControlsState.selected,
       (selectedDevice) => {
-        console.log('WATCH -- selectedDevice: ', selectedDevice)
-        emit('select-device', selectedDevice)
+        emit('select', selectedDevice)
       }
     )
 
-    // function handleFetchClick () {
-    //   console.log('FETCH HANDLER CALLED')
-    //   emit("fetch-stream")
-    // }
-
     return {
-      ...toRefs(audioControlsState),
-      // handleFetchClick
+      ...toRefs(audioControlsState)
     }
   }
 }

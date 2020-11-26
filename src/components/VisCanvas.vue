@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'VisCanvas'
+  name: 'vis-canvas'
 }
 </script>
 
