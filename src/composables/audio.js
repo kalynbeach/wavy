@@ -3,6 +3,13 @@ import { reactive, toRefs } from 'vue'
 
 export default function useAudio () {
 
+  const defaultDevice = {
+    deviceId: 'default',
+    // label: 'Default - MacBook Pro Microphone (Built-in)',
+    label: 'Default Device',
+    uniqueId: Math.round(Math.random() * 1024)
+  }
+
   const audioState = reactive({
     audioContext: null,
     audioStream: null,
@@ -10,7 +17,7 @@ export default function useAudio () {
     audioAnalyser: null,
     audioDevices: {
       available: [],
-      selected: null
+      selected: defaultDevice
     }
   })
 
@@ -84,14 +91,18 @@ export default function useAudio () {
     console.log('Fetching available AudioDevices...')
     navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
-        let identifiedDevices = devices.map(device => {
+        const identifiedDevices = devices.map(device => {
           Object.defineProperty(device, 'uniqueId', {
             value: Math.round(Math.random() * 1024)
           })
           return device
         })
-        audioState.audioDevices.available = identifiedDevices
-        console.log('AudioDevices fetched.')
+        const filteredDevices = identifiedDevices.filter(device => (
+          device.kind && device.kind !== 'videoinput'
+        ))
+        audioState.audioDevices.available = filteredDevices
+        audioState.audioDevices.selected = filteredDevices[0]
+        console.log('AudioDevices fetched: ', audioState.audioDevices)
       })
       .catch(function(err) {
         console.error('AudioDevices could not be fetched: ', err)
@@ -101,17 +112,18 @@ export default function useAudio () {
   async function fetchMediaStream (deviceId) {
     let stream = null
     const constraints = { audio: { deviceId: { exact: deviceId ? deviceId : undefined } } }
-    console.log('Fetching MediaStream... ', constraints)
+    console.log('Fetching MediaStream... ')
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints)
       audioState.audioStream = stream
-      console.log('MediaStream fetched.')
+      console.log('MediaStream fetched')
     } catch(err) {
       console.error('MediaStream could not be fetched: ', err)
     }
   }
 
   function selectDevice (device) {
+    console.log('Selecting Device: ', device)
     try {
       audioState.audioDevices.selected = device
       initAudio(device)

@@ -40,7 +40,7 @@ export default {
       audioGain,
       audioAnalyser,
       audioDevices,
-      initAudio,
+      // initAudio,
       fetchAvailableDevices,
       selectDevice,
       setAudioGain
@@ -55,7 +55,7 @@ export default {
 
     function init () {
       fetchAvailableDevices()
-      initAudio()
+      // initAudio()
       initCanvas()
     }
 
@@ -83,8 +83,6 @@ export default {
       audioGain,
       audioAnalyser,
       audioDevices,
-      initAudio,
-      fetchAvailableDevices,
       selectDevice,
       setAudioGain,
       // Canvas
@@ -96,14 +94,26 @@ export default {
 </script>
 
 <style lang="scss">
+@import '@/scss/variables';
+
 .wavy {
   width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: $background-color;
 
   h1, h2, h3 {
     margin: 0;
+  }
+
+  .button {
+    min-height: 1rem;
+    padding: 0.25rem 1rem;
+    font-size: 16px;
+    border-radius: 1rem;
+    background-color: $background-light-color;
+    border: 2px solid $border-color;
   }
 }
 </style>

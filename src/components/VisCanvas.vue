@@ -11,6 +11,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '@/scss/variables';
+
 .vis-canvas {
   width: 100%;
   min-height: 95vh;
@@ -19,7 +21,6 @@ export default {
   #vis-canvas {
     width: 100%;
     height: 100%;
-    border: 2px solid #2c3e50;;
     box-sizing: border-box;
   }
 }

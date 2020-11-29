@@ -5,17 +5,18 @@
       <button @click="$emit('visualize')" class="button">Visualize</button>
     </div>
     <div class="info">
-      <p>Selected Device: {{ selectedDevice ? selectedDevice.label : "No device selected" }}</p>
+      <p>Selected Device: {{ selected ? selected.label : "No device selected" }}</p>
     </div>
     <div class="audio-device-select">
       <select
         name="device-select"
         id="device-select"
         v-model="selected">
+        <option disabled value="">Select a device</option>
         <option 
           v-for="device in devices"
-          v-bind:value="device"
-          v-bind:key="device.uniqueId">
+          :value="device"
+          :key="device.uniqueId">
           {{ device.label }}
         </option>
       </select>
@@ -25,7 +26,7 @@
 
 <script>
 /* eslint-disable no-console */
-import { reactive, watch, toRefs } from 'vue'
+import { reactive, toRefs, watch } from 'vue'
 
 
 export default {
@@ -44,24 +45,30 @@ export default {
 
   setup (props, { emit }) {
 
-    const audioControlsState = reactive({
+    const state = reactive({
       selected: props.selectedDevice
     })
 
-    watch(() => audioControlsState.selected,
-      (selectedDevice) => {
-        emit('select', selectedDevice)
-      }
-    )
+    watch(() => props.selectedDevice, (device) => {
+      // console.log('WATCH props.selectedDevice: ', device)
+      state.selected = device
+    })
+
+    watch(() => state.selected, (device) => {
+      // console.log('WATCH state.selected: ', device)
+      emit('select', device)
+    })
 
     return {
-      ...toRefs(audioControlsState)
+      ...toRefs(state)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/variables';
+
 .audio-controls {
   height: 5vh;
   padding: 0 0.5rem;
@@ -80,18 +87,31 @@ export default {
     justify-content: space-around;
     align-items: center;
 
-    .button {
-      background-color: white;
-      border: 2px solid #2c3e50;;
+    .button:not(:last-of-type) {
+      margin-right: 1rem;
+    }
+  }
 
-      &:not(:last-of-type) {
-        margin-right: 1rem;
-      }
+  .info {
+    p {
+      font-weight: bold;
     }
   }
 
   .audio-device-select {
     align-self: center;
+
+    select {
+      min-height: 2rem;
+      padding: 0 0.5rem;
+      border-radius: 1rem;
+
+      option {
+        min-height: 100%;
+        min-width: 100%;
+        color: black;
+      }
+    }
   }
 }
 </style>
