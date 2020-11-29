@@ -4,7 +4,6 @@
     <audio-controls
       :devices="audioDevices.available"
       :selectedDevice="audioDevices.selected"
-      @fetch="fetchMediaStream"
       @select="selectDevice"
       @visualize="runVisualizer">
     </audio-controls>
@@ -38,61 +37,58 @@ export default {
     const {
       audioContext,
       audioStream,
+      audioGain,
       audioAnalyser,
       audioDevices,
-      createAudioAnalyser,
-      createAudioContext,
-      fetchMediaStream,
+      initAudio,
       fetchAvailableDevices,
-      selectDevice
+      selectDevice,
+      setAudioGain
     } = useAudio()
 
     const {
       canvasContext,
       canvasElement,
-      createCanvasContext,
+      initCanvas,
       visualizeWaveform
     } = useCanvas()
 
+    function init () {
+      fetchAvailableDevices()
+      initAudio()
+      initCanvas()
+    }
+
     function runVisualizer () {
       console.log('Running visualizer...')
-      console.log('audioContext: ', audioContext.value)
-      if (audioContext.value) {
-        audioContext.value.resume()
-      }
-      if (audioContext.value && audioStream.value) {
-        createAudioAnalyser()
-      } else {
-        if (audioContext.value == null) { console.error('AudioContext has not yet been created') }
-        if (audioStream.value == null) { console.error('MediaStream has not yet been fetched') }
-      }
-      createCanvasContext()
-      if (audioAnalyser.value && canvasElement.value && canvasContext.value) {
-        visualizeWaveform(audioAnalyser.value)
-      } else {
-        if (audioAnalyser.value == null) { console.error('AnalyserNode has not yet been created') }
-        if (canvasElement.value == null) { console.error('Canvas has not yet been created') }
-        if (canvasContext.value == null) { console.error('Canvas context has not yet been created') }
+      try {
+        if (audioContext.value) { audioContext.value.resume() }
+        if (audioAnalyser.value && canvasElement.value && canvasContext.value) {
+          visualizeWaveform(audioAnalyser.value)
+        } 
+      } catch (err) {
+        console.error('Visualizer could not run: ', err)
       }
     }
 
     onMounted(() => {
-      fetchAvailableDevices()
-      createAudioContext()
+      init()
     })
 
     return {
       state,
+      // Audio
       audioContext,
       audioStream,
+      audioGain,
       audioAnalyser,
       audioDevices,
-      createAudioContext,
-      fetchMediaStream,
+      initAudio,
       fetchAvailableDevices,
       selectDevice,
-      createCanvasContext,
-      visualizeWaveform,
+      setAudioGain,
+      // Canvas
+      initCanvas,
       runVisualizer
     }
   }

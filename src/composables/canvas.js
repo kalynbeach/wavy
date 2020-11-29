@@ -8,16 +8,27 @@ export default function useCanvas () {
     canvasElement: null
   })
 
+  function initCanvas () {
+    try {
+      createCanvasContext()
+    } catch (err) {
+      console.error('Canvas could not be initialized: ', err)
+    }
+  }
+
   function createCanvasContext () {
-    canvasState.canvasElement = document.getElementById('vis-canvas')
-    canvasState.canvasContext = canvasState.canvasElement.getContext('2d')
-    console.log('Canvas and canvas context created!')
+    try {
+      canvasState.canvasElement = document.getElementById('vis-canvas')
+      canvasState.canvasContext = canvasState.canvasElement.getContext('2d')
+      console.log('CanvasElement and canvasContext created.')
+    } catch (err) {
+      console.error('CanvasContext could not be created: ', err)
+    }
   }
 
   function visualizeWaveform (analyser) {
     const canvas = canvasState.canvasElement
     const ctx = canvasState.canvasContext
-
     const WIDTH = canvas.width
     const HEIGHT = canvas.height
     
@@ -45,11 +56,8 @@ export default function useCanvas () {
       for (let i = 0; i < bufferLength; i++) {
         let v = dataArray[i] / 128.0
         let y = v * HEIGHT / 2
-        if (i === 0) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
+        if (i === 0) { ctx.moveTo(x, y) } 
+        else { ctx.lineTo(x, y) }
         x += sliceWidth
       }
 
@@ -62,7 +70,7 @@ export default function useCanvas () {
 
   return {
     ...toRefs(canvasState),
-    createCanvasContext,
+    initCanvas,
     visualizeWaveform
   }
 }

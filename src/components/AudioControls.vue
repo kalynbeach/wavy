@@ -2,8 +2,7 @@
   <div class="audio-controls">
     <h1>Wavy</h1>
     <div class="buttons">
-      <button @click="$emit('fetch')" class="button">Fetch MediaStream</button>
-      <button @click="$emit('visualize')" class="button">Visualize Waveform</button>
+      <button @click="$emit('visualize')" class="button">Visualize</button>
     </div>
     <div class="info">
       <p>Selected Device: {{ selectedDevice ? selectedDevice.label : "No device selected" }}</p>
@@ -39,8 +38,6 @@ export default {
   },
 
   emits: [
-    'test',
-    'fetch',
     'select',
     'visualize'
   ],
@@ -51,8 +48,7 @@ export default {
       selected: props.selectedDevice
     })
 
-    watch(
-      () => audioControlsState.selected,
+    watch(() => audioControlsState.selected,
       (selectedDevice) => {
         emit('select', selectedDevice)
       }
