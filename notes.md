@@ -31,8 +31,10 @@
 
 ## TODOS
 
-- Gain controls / mute function
-  - Needs to control output volume but still allow signal with gain to be analyzed
+- Work on AudioControls component
+  - Redesign / improve layout (less horizontal shift)
+  - Gain controls / mute function
+    - Needs to control output volume but still allow signal with gain to be analyzed
 
 - Factor out configs, use in audio and canvas composables
   - Default AudioDevice

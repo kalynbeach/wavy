@@ -3,7 +3,7 @@ import { reactive, toRefs } from 'vue'
 
 export default function useCanvas () {
 
-  const canvasState = reactive({
+  const state = reactive({
     canvasContext: null,
     canvasElement: null
   })
@@ -18,21 +18,19 @@ export default function useCanvas () {
 
   function createCanvasContext () {
     try {
-      canvasState.canvasElement = document.getElementById('vis-canvas')
-      canvasState.canvasContext = canvasState.canvasElement.getContext('2d')
-      console.log('CanvasElement and canvasContext created.')
+      state.canvasElement = document.getElementById('vis-canvas')
+      state.canvasContext = state.canvasElement.getContext('2d')
     } catch (err) {
       console.error('CanvasContext could not be created: ', err)
     }
   }
 
   function visualizeWaveform (analyser) {
-    const canvas = canvasState.canvasElement
-    const ctx = canvasState.canvasContext
+    const canvas = state.canvasElement
+    const ctx = state.canvasContext
     const WIDTH = canvas.width
     const HEIGHT = canvas.height
     
-    // Set up audio buffer
     analyser.fftSize = 2048
     const bufferLength = analyser.frequencyBinCount
     let dataArray = new Uint8Array(bufferLength)
@@ -69,7 +67,7 @@ export default function useCanvas () {
   }
 
   return {
-    ...toRefs(canvasState),
+    ...toRefs(state),
     initCanvas,
     visualizeWaveform
   }

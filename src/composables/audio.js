@@ -9,7 +9,7 @@ export default function useAudio () {
     label: 'Music Monitor (Virtual)'
   }
 
-  const audioState = reactive({
+  const state = reactive({
     audioContext: null,
     audioStream: null,
     audioSource: null,
@@ -24,7 +24,6 @@ export default function useAudio () {
   function initAudio (device = null) {
     const deviceId = device ? device.deviceId : null
     fetchMediaStream(deviceId).then(() => {
-      console.log('Initializing Audio... ', device ? `[ ${ device.label } ]` : '[ default device ]')
       try {
         createAudioContext()
         createAudioSourceNode()
@@ -39,37 +38,33 @@ export default function useAudio () {
   }
 
   function createAudioContext () {
-    console.log('Creating AudioContext...')
     try {
-      audioState.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      state.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     } catch (err) {
       console.error('AudioContext could not be created: ', err)
     }
   }
 
-  function createAudioSourceNode (stream = audioState.audioStream) {
-    console.log('Creating AudioSourceNode...')
+  function createAudioSourceNode (stream = state.audioStream) {
     try {
-      audioState.audioSource = audioState.audioContext.createMediaStreamSource(stream)
+      state.audioSource = state.audioContext.createMediaStreamSource(stream)
     } catch (err) {
       console.error('AudioSourceNode could not be created: ', err)
     }
   }
 
   function createAudioGainNode () {
-    console.log('Creating AudioGainNode...')
     try {
-      audioState.audioGain = audioState.audioContext.createGain()
+      state.audioGain = state.audioContext.createGain()
     } catch (err) {
       console.error('AudioGainNode could not be created: ', err)
     }
   }
 
   function createAudioAnalyserNode () {
-    console.log('Creating AudioAnalyser...')
     try {
-      if (audioState.audioContext && audioState.audioStream) {
-        audioState.audioAnalyser = audioState.audioContext.createAnalyser()
+      if (state.audioContext && state.audioStream) {
+        state.audioAnalyser = state.audioContext.createAnalyser()
       }
     } catch (err) {
       console.error('AudioAnalyserNode could not be created: ', err)
@@ -77,18 +72,16 @@ export default function useAudio () {
   }
 
   function connectAudioNodes () {
-    console.log('Connecting AudioNodes...')
     try {
-      audioState.audioSource.connect(audioState.audioGain)
-      audioState.audioGain.connect(audioState.audioAnalyser)
-      audioState.audioAnalyser.connect(audioState.audioContext.destination)
+      state.audioSource.connect(state.audioGain)
+      state.audioGain.connect(state.audioAnalyser)
+      state.audioAnalyser.connect(state.audioContext.destination)
     } catch (err) {
       console.error('AudioNodes could not be connected: ', err)
     }
   }
 
   function fetchAvailableDevices () {
-    console.log('Fetching available AudioDevices...')
     navigator.mediaDevices.enumerateDevices()
       .then(function(devices) {
         const identifiedDevices = devices.map(device => {
@@ -104,8 +97,8 @@ export default function useAudio () {
         const defaultSelectedDevice = filteredDevices.filter(device => (
           device.deviceId === defaultDevice.deviceId && device.label === defaultDevice.label
         ))
-        audioState.audioDevices.available = filteredDevices
-        audioState.audioDevices.selected = defaultSelectedDevice.length > 0 ? defaultSelectedDevice[0]: filteredDevices[0]
+        state.audioDevices.available = filteredDevices
+        state.audioDevices.selected = defaultSelectedDevice.length > 0 ? defaultSelectedDevice[0]: filteredDevices[0]
       })
       .catch(function(err) {
         console.error('AudioDevices could not be fetched: ', err)
@@ -115,21 +108,18 @@ export default function useAudio () {
   async function fetchMediaStream (deviceId) {
     let stream = null
     const constraints = { audio: { deviceId: { exact: deviceId ? deviceId : undefined } } }
-    console.log('Fetching MediaStream... ')
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints)
-      audioState.audioStream = stream
-      console.log('MediaStream fetched')
+      state.audioStream = stream
     } catch(err) {
       console.error('MediaStream could not be fetched: ', err)
     }
   }
 
   function selectDevice (device) {
-    console.log(`Selecting Device: [ ${device.label} ]`)
     try {
-      audioState.audioDevices.selected = device
-      initAudio(audioState.audioDevices.selected)
+      state.audioDevices.selected = device
+      initAudio(state.audioDevices.selected)
     } catch (err) {
       console.error(`Device [ ${ device.label } ] could not be initialized: `, err)
     }
@@ -138,14 +128,14 @@ export default function useAudio () {
   function setAudioGain (level = 0) {
     // Level min = 0, max = 1
     try {
-      audioState.audioGain.gain.setValueAtTime(level, audioState.audioContext.currentTime)
+      state.audioGain.gain.setValueAtTime(level, state.audioContext.currentTime)
     } catch (err) {
       console.error('Audio gain could not be set: ', err)
     }
   }
 
   return {
-    ...toRefs(audioState),
+    ...toRefs(state),
     initAudio,
     fetchAvailableDevices,
     selectDevice,

@@ -40,7 +40,6 @@ export default {
       audioGain,
       audioAnalyser,
       audioDevices,
-      // initAudio,
       fetchAvailableDevices,
       selectDevice,
       setAudioGain
@@ -55,7 +54,6 @@ export default {
 
     function init () {
       fetchAvailableDevices()
-      // initAudio()
       initCanvas()
     }
 
