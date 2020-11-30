@@ -3,16 +3,16 @@ import { reactive, toRefs } from 'vue'
 
 export default function useAudio () {
 
+  // Config for default AudioDevice - used if found in available devices
   const defaultDevice = {
-    deviceId: 'default',
-    // label: 'Default - MacBook Pro Microphone (Built-in)',
-    label: 'Default Device',
-    uniqueId: Math.round(Math.random() * 1024)
+    deviceId: '7cd23f310c26765acb1eddcb52e80a659ce7820a99e6c3ef3f10cdc8c68c3012',
+    label: 'Music Monitor (Virtual)'
   }
 
   const audioState = reactive({
     audioContext: null,
     audioStream: null,
+    audioSource: null,
     audioGain: null,
     audioAnalyser: null,
     audioDevices: {
@@ -27,6 +27,7 @@ export default function useAudio () {
       console.log('Initializing Audio... ', device ? `[ ${ device.label } ]` : '[ default device ]')
       try {
         createAudioContext()
+        createAudioSourceNode()
         createAudioGainNode()
         createAudioAnalyserNode()
         connectAudioNodes()
@@ -49,7 +50,7 @@ export default function useAudio () {
   function createAudioSourceNode (stream = audioState.audioStream) {
     console.log('Creating AudioSourceNode...')
     try {
-      return audioState.audioContext.createMediaStreamSource(stream)
+      audioState.audioSource = audioState.audioContext.createMediaStreamSource(stream)
     } catch (err) {
       console.error('AudioSourceNode could not be created: ', err)
     }
@@ -78,8 +79,7 @@ export default function useAudio () {
   function connectAudioNodes () {
     console.log('Connecting AudioNodes...')
     try {
-      const sourceNode = createAudioSourceNode()
-      sourceNode.connect(audioState.audioGain)
+      audioState.audioSource.connect(audioState.audioGain)
       audioState.audioGain.connect(audioState.audioAnalyser)
       audioState.audioAnalyser.connect(audioState.audioContext.destination)
     } catch (err) {
@@ -100,9 +100,12 @@ export default function useAudio () {
         const filteredDevices = identifiedDevices.filter(device => (
           device.kind && device.kind !== 'videoinput'
         ))
+
+        const defaultSelectedDevice = filteredDevices.filter(device => (
+          device.deviceId === defaultDevice.deviceId && device.label === defaultDevice.label
+        ))
         audioState.audioDevices.available = filteredDevices
-        audioState.audioDevices.selected = filteredDevices[0]
-        console.log('AudioDevices fetched: ', audioState.audioDevices)
+        audioState.audioDevices.selected = defaultSelectedDevice.length > 0 ? defaultSelectedDevice[0]: filteredDevices[0]
       })
       .catch(function(err) {
         console.error('AudioDevices could not be fetched: ', err)
@@ -123,10 +126,10 @@ export default function useAudio () {
   }
 
   function selectDevice (device) {
-    console.log('Selecting Device: ', device)
+    console.log(`Selecting Device: [ ${device.label} ]`)
     try {
       audioState.audioDevices.selected = device
-      initAudio(device)
+      initAudio(audioState.audioDevices.selected)
     } catch (err) {
       console.error(`Device [ ${ device.label } ] could not be initialized: `, err)
     }
@@ -137,7 +140,7 @@ export default function useAudio () {
     try {
       audioState.audioGain.gain.setValueAtTime(level, audioState.audioContext.currentTime)
     } catch (err) {
-      console.log('Audio gain could not be set: ', err)
+      console.error('Audio gain could not be set: ', err)
     }
   }
 
