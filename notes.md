@@ -31,10 +31,10 @@
 
 ## TODOS
 
-- Work on AudioControls component
-  - Redesign / improve layout (less horizontal shift)
-  - Gain controls / mute function
-    - Needs to control output volume but still allow signal with gain to be analyzed
+- Gain controls / mute function
+  - Needs to control output volume but still allow signal with gain to be analyzed
+
+- Refactor runVisualizer, less logic in Wavy component method
 
 - Factor out configs, use in audio and canvas composables
   - Default AudioDevice

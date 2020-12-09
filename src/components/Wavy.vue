@@ -37,7 +37,6 @@ export default {
     const {
       audioContext,
       audioStream,
-      audioGain,
       audioAnalyser,
       audioDevices,
       fetchAvailableDevices,
@@ -78,7 +77,6 @@ export default {
       // Audio
       audioContext,
       audioStream,
-      audioGain,
       audioAnalyser,
       audioDevices,
       selectDevice,
