@@ -1,6 +1,5 @@
 # Notes
 
-
 ## Web Audio API
 
 ### Audio Graph Nodes
@@ -22,12 +21,11 @@
       - Create AudioContext
       - Create AudioNode (AudioSourceNode) from MediaStream
       - Create AudioGain
-      - Create AudioAnalyser 
+      - Create AudioAnalyser
     - Connect AudioNodes
       - Connect AudioSourceNode to AudioGain
       - Connect AudioGain to AudioAnalyser
       - Connect AudioAnalyser to AudioContext.destination
-
 
 ## TODOS
 
@@ -41,4 +39,3 @@
     - deviceId
     - label
   - Canvas element id
-

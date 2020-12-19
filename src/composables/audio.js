@@ -27,8 +27,8 @@ export default function useAudio () {
       try {
         createAudioContext()
         createAudioSourceNode()
-        createAudioGainNode()
         createAudioAnalyserNode()
+        createAudioGainNode()
         connectAudioNodes()
         console.log(`[[ Audio initialized: ${ device ? device.label : 'default device ' } ]]`)
       } catch (err) {
@@ -73,9 +73,10 @@ export default function useAudio () {
 
   function connectAudioNodes () {
     try {
-      state.audioSource.connect(state.audioGain)
-      state.audioGain.connect(state.audioAnalyser)
-      state.audioAnalyser.connect(state.audioContext.destination)
+      state.audioSource.connect(state.audioAnalyser)
+      state.audioAnalyser.connect(state.audioGain)
+      setAudioGain()
+      state.audioGain.connect(state.audioContext.destination)
     } catch (err) {
       console.error('AudioNodes could not be connected: ', err)
     }
