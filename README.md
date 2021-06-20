@@ -1,5 +1,9 @@
 # wavy
 
+A live audio visualizer.
+
+Check out `notes.md` for more details.
+
 ## Project setup
 ```
 npm install
@@ -19,6 +23,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

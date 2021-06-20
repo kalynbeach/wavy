@@ -31,7 +31,7 @@ export default function useCanvas () {
     const WIDTH = canvas.width
     const HEIGHT = canvas.height
     
-    analyser.fftSize = 2048
+    analyser.fftSize = 2048 // Fast Fourier Transform
     const bufferLength = analyser.frequencyBinCount
     let dataArray = new Uint8Array(bufferLength)
     
